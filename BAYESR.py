@@ -54,7 +54,10 @@ class BAYESR:
       tab=pd.read_excel(conf['datasets'][k])
       data=self.gen_F2C(tab.X.values,tab.Q2.values,str(k),isave=False)
       data['dF2C(exp)']=data['F2C'][0]*tab.relerr.values
-      data['F2C(exp)']=data['F2C'][0]+np.random.randn(tab.X.size)*data['dF2C(exp)']
+      if conf['gauss noise']:
+        data['F2C(exp)']=data['F2C'][0]+np.random.randn(tab.X.size)*data['dF2C(exp)']
+      else:
+        data['F2C(exp)']=np.copy(data['F2C'][0])
       save(data,'data/%s'%str(k))
       print 'F2C has been saved at data/%s'%str(k)
 

@@ -9,6 +9,7 @@ from BAYESR import BAYESR
 conf={}
 conf['datasets']={}
 conf['datasets'][10000]='expdata/10000.xlsx'
+conf['gauss noise']=True
 
 
 # step 1: initalize the BAYESR class
