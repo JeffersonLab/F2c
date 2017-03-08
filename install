@@ -1,0 +1,7 @@
+#!/bin/bash
+cd F2C
+make pycode
+cd -
+
+
+

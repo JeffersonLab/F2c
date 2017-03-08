@@ -1,0 +1,12 @@
+# Sample F2H pseudodata set (H = charm)
+#
+# COL1  X
+# COL2  QQ
+# COL3  RELERR = DELTA-F2H/F2H
+#
+  0.1000E-01   5.0   0.2
+  0.1585E-01   5.0   0.2
+  0.2512E-01   5.0   0.2
+  0.3981E-01   5.0   0.2
+  0.6310E-01   5.0   0.2
+  0.1000E+00   5.0   0.2

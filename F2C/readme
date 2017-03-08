@@ -1,0 +1,43 @@
+
+1) FILE CONTENT
+
+hq_app_sfdat.f     Application program SFDAT: read pseudodata, compute F2charm, Hessian error
+hq_core_sfh.f      Core routines: F2H calculation, coefficient function, x integrals
+hq_usr_pdf.f       User-defined routine for generic PDF call (here EPS09LO and GRV98)
+
+dqags.f            SLATEC library routine for numerical integration
+slmach.f           SLATEC library routine machine constants
+
+EPS09.f            EPS09 nuclear PDF routines
+grv98.f            GRV98 proton  PDF routines
+
+EPS09LOR_56        EPS09 grid
+grv98lo.grid       GRV98 grid
+
+SFDAT.IN           Input of routine SFDAT (x, Q2 grid, pseudodata error)
+SFDAT.OUT          Output of routine SFDAT (F2charm, Hessian error)
+			   
+hq_app_sfdat.link  Shell script for producing executable  hq_app_sfdat
+
+
+
+2) COMPILE, LINK, AND RUN INSTRUCTIONS
+
+gfortran -c *.f         Compiles all xxx.f files, produces xxx.o for each one
+bash hq_app_sfdat.link  Produces executable  hq_app_sfdat
+./hq_app_sfdat          Run executable  hq_app_sfdat
+
+
+
+3) FUNCTIONALITY
+
+The file SFDAT.IN contains an x, Q2 grid with simulated experimental errors of the charm 
+structure function F2H (pseudodata). The program SFDAT (in file hq_app_sfdat.f) 
+  -- reads the data file into an array,
+  -- calculates F2H for the central EPS09 set (ISET = 1),
+  -- calculated the Hessian error by summing over the EPS09 displaced sets (ISET = 2-31).
+
+
+The PDF set is specified by the variable IPDF, which is transmitted to the PDF routine
+through the common block /PDFI/
+
