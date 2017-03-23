@@ -1,5 +1,13 @@
 *DECK PDF
       SUBROUTINE PDF(X, QQ, UV, DV, US, DS, SS, GL)
+Cf2py intent(in) x
+Cf2py intent(in) qq
+Cf2py intent(out) uv
+Cf2py intent(out) dv
+Cf2py intent(out) us
+Cf2py intent(out) ds
+Cf2py intent(out) ss
+Cf2py intent(out) gl
 C
 C     GENERIC PARTON DENSITY
 C     CALLS SPECIFIC PARAMETRIZTION
