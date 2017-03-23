@@ -20,6 +20,18 @@ class F2C:
     """
     return fF2C.sfh(x,Q2,isf)
 
+  def get_xpdf(self,x,Q2,flav):
+    uv,dv,us,ds,ss,gl=fF2C.pdf(x,Q2)
+    if   flav=='uv': return uv
+    elif flav=='dv': return dv
+    elif flav=='us': return us
+    elif flav=='ds': return ds
+    elif flav=='ss': return ss
+    elif flav=='gl': return gl
+    else:
+      print 'pdf flav=%s not supported'%flav
+      print 'aborting'
+      sys.exit()
 
 if __name__=='__main__':
 

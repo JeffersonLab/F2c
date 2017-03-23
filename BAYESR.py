@@ -32,7 +32,7 @@ class BAYESR:
     D={}
     self.f2c.set_pdfset(1)
     D[0]=np.array([self.f2c.get_F2C(X[j],Q2[j],isf) for j in range(X.size)])
-    bar=BAR('calc %s'%fname,15)
+    bar=BAR('calc F2C',15)
     for i in range(1,16):
       k=2*i
       self.f2c.set_pdfset(k)
@@ -48,6 +48,24 @@ class BAYESR:
       print 'F2C has been saved at data/%s'%fname
     return data
 
+  def gen_XPDF(self,X,Q2,flav):
+    isf=1
+    D={}
+    self.f2c.set_pdfset(1)
+    D[0]=np.array([self.f2c.get_xpdf(X[j],Q2[j],flav) for j in range(X.size)])
+    bar=BAR('calc PDF=%s'%flav,15)
+    for i in range(1,16):
+      k=2*i
+      self.f2c.set_pdfset(k)
+      D[i]=np.array([self.f2c.get_xpdf(X[j],Q2[j],flav) for j in range(X.size)])
+      k=2*i+1
+      self.f2c.set_pdfset(k)
+      D[-i]=np.array([self.f2c.get_xpdf(X[j],Q2[j],flav) for j in range(X.size)])
+      bar.next()
+    bar.finish()
+    data={'X':X,'Q2':Q2,flav:D}
+    return data
+
   def gen_F2C_input(self):
     conf=self.conf
     for k in conf['datasets']:
@@ -61,18 +79,15 @@ class BAYESR:
       save(data,'data/%s'%str(k))
       print 'F2C has been saved at data/%s'%str(k)
 
-  def get_hess_errors(self,D):
-    X=D['X']
-    Q2=D['Q2']
-    F2C0=D['F2C'][0]
-    dF2C2=np.zeros(X.size)
+  def get_hess_errors(self,D,key):
+    err2=np.zeros(D[key][0].size)
     for k in range(1,16):
-      dF2C2+=(D['F2C'][k]-D['F2C'][-k])**2/4.0
-    D['dF2C(hess)']=dF2C2**0.5
+      err2+=(D[key][k]-D[key][-k])**2/4.0
+    return {'d%s(hess)'%key:err2**0.5}
 
   def print_F2C(self,fname):
     D=load(fname)
-    self.get_hess_errors(D)
+    self.get_hess_errors(D,'F2C')
     fmt='x=%5.3f  Q2=%10.2e  F2C=%10.3e  dF2C(hess)/F2C=%10.3e dF2C(exp)/F2C=%10.3e'
     for i in range(D['X'].size):
       print fmt%(D['X'][i],D['Q2'][i],D['F2C'][0][i],\
@@ -90,9 +105,9 @@ class BAYESR:
   def gen_mc(self,data,RAND,nrep=1000):
     MCF2C=[]
     for k in range(nrep):
-      F2Ck=np.copy(data['F2C'][0])
+      F2Ck=np.copy(data[0])
       for s in range(1,16):
-        F2Ck+=(data['F2C'][s]-data['F2C'][-s])*RAND[k][s]/2
+        F2Ck+=(data[s]-data[-s])*RAND[k][s]/2
       MCF2C.append(F2Ck)
     return np.array(MCF2C)
 
@@ -114,7 +129,7 @@ class BAYESR:
     bar=BAR('compute bayes weights',len(conf['datasets'].keys()))
     for idx in conf['datasets']:
       d=load('data/%d'%idx)
-      MCF2C=self.gen_mc(d,D['RAND'],nrep=nrep)
+      MCF2C=self.gen_mc(d['F2C'],D['RAND'],nrep=nrep)
       CHI2=np.array([np.sum(((d['F2C(exp)']-F2CK)/d['dF2C(exp)'])**2) for F2CK in MCF2C])
       D['Widx'][idx]=self._get_weights(CHI2)
       D['exp'][idx]=d
@@ -125,24 +140,38 @@ class BAYESR:
     print 'saving bayes weights...'
     save(D,'data/BayesWeights')
 
-  def get_reweighted_F2C(self,W,MCF2C):
-    mean=np.einsum('i,ij',W,MCF2C)
-    std=np.einsum('i,ij',W,(MCF2C-mean)**2)**0.5
-    return {'F2C(pos)':mean,'dF2C(pos)':std}
+  def get_priors(self,D,key):
+    mc=self.gen_mc(D[key],D['RAND'],nrep=D['Wtot'].size)
+    mean=np.mean(mc,axis=0)
+    std=np.std(mc,axis=0)
+    return {'MC%s'%key:mc,'%s(pri)'%key:mean,'d%s(pri)'%key:std}
 
-  def get_RW_F2C(self,X,Q2,fname):
-    D=self.gen_F2C(X,Q2,fname,isave=False)
-    D.update(load('data/BayesWeights'))
-    D['MCF2C']=self.gen_mc(D,D['RAND'],nrep=D['Wtot'].size)
-    D['F2C(pri)']=np.mean(D['MCF2C'],axis=0)
-    D['dF2C(pri)']=np.std(D['MCF2C'],axis=0)
-    D.update(self.get_reweighted_F2C(D['Wtot'],D['MCF2C']))
-    self.get_hess_errors(D)
-    D['MCF2C']=D['MCF2C'][:50]
+  def get_posteriors(self,D,key):
+    mean=np.einsum('i,ij',D['Wtot'],D['MC%s'%key])
+    std=np.einsum('i,ij',D['Wtot'],(D['MC%s'%key]-mean)**2)**0.5
+    return {'%s(pos)'%key:mean,'d%s(pos)'%key:std}
+
+  def gen_priors_and_posteriors(self,X,Q2,fname):
+    D=load('data/BayesWeights')
+
+    D.update(self.gen_F2C(X,Q2,fname,isave=False))
+    D.update(self.get_priors(D,'F2C'))
+    D.update(self.get_posteriors(D,'F2C'))
+    D.update(self.get_hess_errors(D,'F2C'))
+
+    D.update(self.gen_XPDF(X,Q2,'gl'))
+    D.update(self.get_priors(D,'gl'))
+    D.update(self.get_posteriors(D,'gl'))
+    D.update(self.get_hess_errors(D,'gl'))
+
+    for k in D:
+      if k.startswith('MC'):
+        D[k]=D[k][:50]
+
     print 'saving reweighted data at data/%s'%fname
     save(D,'data/%s'%fname)
 
-  def plot(self,fname):  
+  def plot_F2C(self,fname):  
     D=load('data/%s'%fname)
     for i in range(D['F2C'][0].size):
       if D['F2C'][0][i]==0: I=i-1;break
@@ -187,8 +216,50 @@ class BAYESR:
     #ax.set_xlim()
     ax.semilogx()
     py.tight_layout()
-    py.savefig('gallery/%s.pdf'%fname.split('/')[-1])
-    print 'gallery/%s.pdf has been created'%fname
+    py.savefig('gallery/%s-F2C.pdf'%fname.split('/')[-1])
+    py.close()
 
+  def plot_gl(self,fname):  
+    D=load('data/%s'%fname)
+    for i in range(D['gl'][0].size):
+      if D['gl'][0][i]==0: I=i-1;break
+    I=len(D['gl'][0])
+    X=D['X']
+    norm=D['gl'][0] 
+
+    ax=py.subplot(111)
+    Lhess,=ax.plot(X[:I],(D['gl'][0]/norm)[:I],'r--')
+    DO=(D['gl'][0]-D['dgl(hess)'])/norm
+    UP=(D['gl'][0]+D['dgl(hess)'])/norm
+    Bhess=ax.fill_between(X[:I],DO[:I],UP[:I],alpha=0.3,color='y',zorder=1)
+
+    Lpri,=ax.plot(X[:I],(D['gl(pri)']/norm)[:I],'k:')
+    DO=(D['gl(pri)']-D['dgl(pri)'])/norm
+    UP=(D['gl(pri)']+D['dgl(pri)'])/norm
+    Bpri=ax.fill_between(X[:I],DO[:I],UP[:I],alpha=0.3,\
+      facecolor='none',edgecolor='k',hatch='...',zorder=10)
+
+    Lpos,=ax.plot(X[:I],(D['gl(pos)']/norm)[:I],'b--')
+    DO=(D['gl(pos)']-D['dgl(pos)'])/norm
+    UP=(D['gl(pos)']+D['dgl(pos)'])/norm
+    Bpos=ax.fill_between(X[:I],DO[:I],UP[:I],alpha=0.3,color='b',zorder=10)
+  
+    for k in range(30):
+      Y=D['MCgl'][k]/norm
+      Lmc,=ax.plot(X[:I],Y[:I],'r-',alpha=0.3,zorder=0)
+
+    L=[tex('Hess'),tex('pri'),tex('pri(MC)'),tex('pos')]
+    H=[(Bhess,Lhess),(Bpri,Lpri),Lmc,(Bpos,Lpos)]
+    ax.legend(H,L,loc=2,frameon=0,fontsize=15,ncol=2)
+
+    ax.set_xlabel(r'$x$',size=20)
+    ax.set_ylabel(r'$g/g({\rm mean~priors})$',size=20)
+    #ax.semilogy()
+    ax.set_ylim(0.2,1.8)
+    #ax.set_xlim()
+    ax.semilogx()
+    py.tight_layout()
+    py.savefig('gallery/%s-gl.pdf'%fname.split('/')[-1])
+    py.close()
 
 
