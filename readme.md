@@ -1,5 +1,11 @@
 # F2 Charm 4 EIC
 
+## installation
+
+- Go to mstw folder and proceed to install the python 
+  interface according to the readme 
+
+
 ## Quick setup
 
 - Run the install script: 
@@ -27,7 +33,7 @@
   create an issue.
 
 # Authors
-- C. Wiess
+- C. Andres
 - N. Sato
 
 
