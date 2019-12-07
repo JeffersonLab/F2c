@@ -16,66 +16,38 @@ DOUBLE PRECISION distance,tolerance, mCharm,mBottom,alphaSQ0,alphaSMZ
 COMMON/mstwCommon/distance,tolerance,mc,mb,ASMUR,alphaSMZ,alphaSorder,alphaSnfmax
 CHARACTER prefix*50,prefix1*50,cl*4,namejam*60
 integer n
+double precision alphas
 
-FR2 = 1.D0                ! ratio of mu_f^2 to mu_r^
-MUR = 1.D0                ! input mu_r in G
-ASMUR = 0.49128D0         ! input value of alpha_s at mu_r
-MC = 1.4D0                ! charm quark mass
-MB = 4.75D0               ! bottom quark mass
-MT = 175d10               ! top quark mas          
+iordmstw = 1 !--0=LO, 1=NLO, 2=NNLO
+ipn=1        !--1 = proton, 2 = neutron, 3 = nucleus DSSZ, 4 = nucleus EPS09 
+isetjam = 0  !--replica 0
 
-iordmstw = 1 !0=LO, 1=NLO, 2=NNLO
+FR2 = 1.D0                !--ratio of mu_f^2 to mu_r^
+MUR = 1.D0                !--input mu_r in G
+ASMUR = 0.49128D0         !--input value of alpha_s at mu_r
+MC = 1.4D0                !--charm quark mass
+MB = 4.75D0               !--bottom quark mass
+MT = 175d10               !--top quark mas          
+
 CALL WATE96
 CALL INITALPHAS(IORDmstw, FR2, mur, ASMUR, MC, MB, MT)
-!--ipn=1 ! 1 = proton, 2 = neutron, 3 = nucleus DSSZ, 4 = nucleus EPS09 
-      
-
-!!--everything
-!open(20, file='data_10037.txt',status='unknown')
-!do i=1,dim_f2,1
-!  read(20,*) Xdata(i),Q2data(i),rs(i),sigr(i),stat(i),ucor(i),cor(i),norm(i)
-!enddo
-!close(20)   
-!      
-m2=0.8815688 !GeV**2 proton mass**2   
-!--F2c proton (JAM19)     
-ipn=1
-    
-isetjam = 0 !replica 0
-!open(20,file= 'test-mstwcode-jam19-sigmaredc.dat',status='new')
-!do i=1,dim_f2,1
-!  x = Xdata(i)
-!  q2 = Q2data(i)
-!  s = rs(i)**2.d0
-!  q = dsqrt(q2)
-!  y = q2 /x / (s-M2)
-!  yp = 1.d0+(1.d0-y)**2.d0
-!  call MSTWNC(x,q,ipn,f2,f2c,f2b,fl,flc,flb)
-!  f2cjam = f2c
-!  flcjam = flc
-!  thy = f2cjam - y**2.d0/yp*flcjam
-!  !print*, x, q2, f2cjam, flcjam, thy
-!  write(20,*) x, q2, f2cjam, flcjam, thy
-!enddo
-!close(20)
 
 namejam = 'JAM19PDF_proton_nlo'
-!namejam = 'CT10nlo'
-!namejam = 'CJ15nlo'
 call initpdfsetbyname(namejam)
-call numberpdf(n) !number of replicas
+!call numberpdf(n) !number of replicas
 call initpdf(isetjam)
 
-x = 0.5d0
+x  = 0.5d0
 q2 = 10d0
-s = 260d0
-q = dsqrt(q2)
-y = q2 /x / (s-M2)
-yp = 1.d0+(1.d0-y)**2.d0
+q  = dsqrt(q2)
 call MSTWNC(x,q,ipn,f2,f2c,f2b,fl,flc,flb)
-print*,'--------------------------'
-print*,f2,f2c
-
+write(*,'(F20.10)') ALPHAS(q)
+write(*,'(F20.10)') f2
+write(*,'(F20.10)') f2c
+write(*,'(F20.10)') f2b
+write(*,'(F20.10)') fl
+write(*,'(F20.10)') flc
+write(*,'(F20.10)') flb
 end program
 
 

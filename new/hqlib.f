@@ -12,8 +12,19 @@ C--     IPN = 1, 2 for p or n.
 C--     IORD = 0, 1, 2 for LO, NLO, NNLO (pass in COMMON block).
 C--   Output variables: f2,f2c,f2b,fl,flc,flb.
       SUBROUTINE MSTWNC(x,q,ipn,f2,f2c,f2b,fl,flc,flb)
+Cf2py intent(in) x
+Cf2py intent(in) q
+Cf2py intent(in) ipn
+Cf2py intent(out) f2
+Cf2py intent(out) f2c
+Cf2py intent(out) f2b
+Cf2py intent(out) fl
+Cf2py intent(out) flc
+Cf2py intent(out) flb
       IMPLICIT DOUBLE PRECISION (A-H, O-Z)
       DIMENSION FTEMP(5)
+      double precision x,q,f2,f2c,f2b,fl,flc,flb
+      integer ipn
       INTEGER alphaSorder,alphaSnfmax
       DOUBLE PRECISION distance,tolerance,
      &     mCharm,mBottom,alphaSQ0,alphaSMZ
@@ -22,10 +33,10 @@ C--   Output variables: f2,f2c,f2b,fl,flc,flb.
       COMMON/GRPTHY/FLAVOR
       COMMON/DYLAMB/xlam,S0
       COMMON/iordCommon/iord
-      COMMON/GAUS96/XI(96),WI(96),XX(97),NTERMS ! G.W. 15/02/2007
-      !COMMON/GAUS96/XI(96),WI(96),XX(97) ! G.W. 15/02/2007
-      !common/nsato1/NTERMS
+      COMMON/GAUS96/XI(96),WI(96),XX(97),NTERMS 
       DATA PI,PI2/3.14159,9.8696/
+
+
 
       IF (IORD.EQ.2) THEN
          CALL MSTWNCnnlo(x,q,ipn,f2,f2c,f2b,fl,flc,flb)
@@ -69,6 +80,7 @@ C--   Output variables: f2,f2c,f2b,fl,flc,flb.
 
  
       CALL FETCH(X,S,IPN,FTEMP)
+      print*,ftemp
       theory=ftemp(1)
       fx=ftemp(1)
       fg=ftemp(2)
@@ -197,7 +209,7 @@ c      fcxy =4./9.*(1.-x/y)**3. !originally not here. its 4/9*(c+barc).toy pdf
       fflc=fflc+0.5/xcmax*(xcmax-x)*wi(i)*al*f1lq*fcxy
       fflc=fflc+0.5*(xcmax-x)*wi(i)*al*clg2c*gluxy 
   323 CONTINUE
-      print*, x, Q2,fflc
+      !print*, x, Q2,fflc
 
       if(epsc.gt.1.) then
       xcmax=1./(1.+epsc4)
@@ -530,9 +542,7 @@ C--   End of MSTWNC subroutine.
       COMMON/GRPTHY/FLAVOR
       COMMON/DYLAMB/xlam,S0
       COMMON/iordCommon/iord
-      COMMON/GAUS96/XI(96),WI(96),XX(97),NTERMS ! G.W. 15/02/2007
-      !COMMON/GAUS96/XI(96),WI(96),XX(97) ! G.W. 15/02/2007
-      !common/nsato1/NTERMS
+      COMMON/GAUS96/XI(96),WI(96),XX(97),NTERMS
       DATA PI,PI2/3.14159,9.8696/
 
       IF (IORD.NE.2) THEN
@@ -1481,10 +1491,10 @@ C      SUBROUTINE MSTWCC(x,q,ipn,f2,f2c,fl,flc,xf3,xf3c)
 
 C--   Rewrite FETCH to return PDFs from grids.
       SUBROUTINE FETCH(X,S,IPN,FTEMP)
-      IMPLICIT DOUBLE PRECISION (A-H, O-Z) ! G.W. 15/02/2007
+      IMPLICIT DOUBLE PRECISION (A-H, O-Z) 
       DIMENSION FTEMP(5)
       COMMON/GRPTHY/FLAVOR
-      COMMON/DYLAMB/xlam,S0 ! G.W. 17/07/2007
+      COMMON/DYLAMB/xlam,S0 
 
 C--   Structure functions.
       CALL GINTRP(7,X,S,IPN,SING)
@@ -1502,10 +1512,8 @@ C--   Proton structure functions.
       FTEMP(1)=(4.*(UPLUS)+DPLUS+SPLUS)/9.
       ftemp(3)=4.*cplus/9.
       ftemp(4)=bplus/9.
-
       RETURN
       END
-
 
       SUBROUTINE GINTRP(I,X,S,IPN,ANS)
       IMPLICIT DOUBLE PRECISION (A-H, O-Z)
@@ -1541,7 +1549,6 @@ c     &     chm,cbar,bot,bbar,glu,phot)
       !call initpdf(isetjam)
 
       call evolvepdf(X,xmuf,f)
-
         g = f(0) !This is x*g
         u = f(2)
         d = f(1)
@@ -1553,6 +1560,7 @@ c     &     chm,cbar,bot,bbar,glu,phot)
         sbarp = f(-3)
         cbarp = f(-4)
         bbarp = f(-5)
+
         
       IF (IPN.EQ.1) then ! proton. They give x*the corresponding distribution
       upv=u -ubarp
@@ -1566,7 +1574,6 @@ c     &     chm,cbar,bot,bbar,glu,phot)
       bot=b
       bbar=bbarp
       glu=g
-c      print*, x, glu 
       else if (IPN.EQ.2) then !neutron
       upv=d -dbarp
       dnv=u - ubarp
@@ -1629,7 +1636,6 @@ c      phot=0
       RETURN
       END
 
-
       FUNCTION ALPHA(T)
       IMPLICIT DOUBLE PRECISION (A-H, O-Z)
       COMMON/DYLAMB/XLAM,S0
@@ -1639,9 +1645,8 @@ C--   G.W. 15/06/2007 Use new routine from PEGASUS.
       RETURN
       END
 
-
       SUBROUTINE WATE96
-      IMPLICIT DOUBLE PRECISION (A-H, O-Z) ! G.W. 15/02/2007
+      IMPLICIT DOUBLE PRECISION (A-H, O-Z) 
 C*******************************************************************
 C*****                                   *****
 C***** THE X(I)    AND W(I) ARE THE DIRECT    OUTPUT FROM A PROGRAM  *****
@@ -1655,9 +1660,7 @@ C*****                                   *****
 C*******************************************************************
       DIMENSION    X(48),W(48)
 c$$$      COMMON/GAUS96/XI(96),WI(96),NTERMS,XX(97)
-      COMMON/GAUS96/XI(96),WI(96),XX(97),NTERMS ! G.W. 15/02/2007
-      !COMMON/GAUS96/XI(96),WI(96),XX(97) ! G.W. 15/02/2007
-      !common/nsato1/NTERMS
+      COMMON/GAUS96/XI(96),WI(96),XX(97),NTERMS
       NTERMS=96
 
       X( 1)=   0.01627674484960183561
@@ -1777,13 +1780,12 @@ c$$$      EXPON=3.D0
       RETURN
       END
 
-
 C----------------------------------------------------------------------
 
 
       function cheavy(i,z,eps)
 
-      IMPLICIT DOUBLE PRECISION (A-H, O-Z) ! G.W. 15/02/2007
+      IMPLICIT DOUBLE PRECISION (A-H, O-Z) 
 
 c     this function returns the values of C_g(z,Q2)
 c     and the deriv. wrt log Q2. Here eps=m2/Q2.
@@ -1902,7 +1904,7 @@ c      if(beta2.lt.0.) go to 10
 
 c Simplified version of NLO clg in FFNS Q2<M2
       function clgffnsl(z,eps)
-      IMPLICIT DOUBLE PRECISION (A-H, O-Z) ! G.W. 15/02/2007
+      IMPLICIT DOUBLE PRECISION (A-H, O-Z) 
       beta2=1.-4.*eps*z/(1.-z)
       beta=sqrt(beta2)
       xi=1./eps
@@ -1926,7 +1928,7 @@ c Simplified version of NLO clg in FFNS Q2<M2
 
 c Simplified version of NLO clq in FFNS Q2<M2
       function clqffnsl(z,eps)
-      IMPLICIT DOUBLE PRECISION (A-H, O-Z) ! G.W. 15/02/2007
+      IMPLICIT DOUBLE PRECISION (A-H, O-Z) 
       beta2=1.-4.*eps*z/(1.-z)
       beta=sqrt(beta2)
       xi=1./eps
@@ -1949,7 +1951,7 @@ c Simplified version of NLO clq in FFNS Q2<M2
 
 c Subtraction term for NLO clg in VFNS
       function clgvfsub(z,eps)
-      IMPLICIT DOUBLE PRECISION (A-H, O-Z) ! G.W. 15/02/2007
+      IMPLICIT DOUBLE PRECISION (A-H, O-Z) 
       COMMON/iordCommon/iord
       beta2=1.-4.*eps*z/(1.-z)
       beta=sqrt(beta2)
@@ -1968,7 +1970,7 @@ c Subtraction term for NLO clg in VFNS
 
 c Simplified version of NLO clg in FFNS Q2>M2
       function clgffnsh(z,eps)
-      IMPLICIT DOUBLE PRECISION (A-H, O-Z) ! G.W. 15/02/2007
+      IMPLICIT DOUBLE PRECISION (A-H, O-Z) 
       beta2=1.-4.*eps*z/(1.-z)
       beta=sqrt(beta2)
       xi=1./eps
@@ -2000,7 +2002,7 @@ c Simplified version of NLO clg in FFNS Q2>M2
 
 c Simplified version of NLO clq in FFNS Q2>M2
       function clqffnsh(z,eps)
-      IMPLICIT DOUBLE PRECISION (A-H, O-Z) ! G.W. 15/02/2007
+      IMPLICIT DOUBLE PRECISION (A-H, O-Z) 
 
       beta2=1.-4.*eps*z/(1.-z)
       beta=sqrt(beta2)
@@ -2033,7 +2035,7 @@ c Simplified version of NLO clq in FFNS Q2>M2
 
 c Simplified version of NLO c2g in FFNS Q2<M2
       function c2gffnsl(z,eps)
-      IMPLICIT DOUBLE PRECISION (A-H, O-Z) ! G.W. 15/02/2007
+      IMPLICIT DOUBLE PRECISION (A-H, O-Z) 
 
       beta2=1.-4.*eps*z/(1.-z)
       beta=sqrt(beta2)
@@ -2066,7 +2068,7 @@ c Simplified version of NLO c2g in FFNS Q2<M2
 
 c Simplified version of NLO c2q in FFNS Q2<M2
       function c2qffnsl(z,eps)
-      IMPLICIT DOUBLE PRECISION (A-H, O-Z) ! G.W. 15/02/2007
+      IMPLICIT DOUBLE PRECISION (A-H, O-Z) 
 
       beta2=1.-4.*eps*z/(1.-z)
       beta=sqrt(beta2)
@@ -2091,7 +2093,7 @@ c Simplified version of NLO c2q in FFNS Q2<M2
 
 c Simplified version of NLO c2g in FFNS Q2>M2
       function c2gffnsh(z,eps)
-      IMPLICIT DOUBLE PRECISION (A-H, O-Z) ! G.W. 15/02/2007
+      IMPLICIT DOUBLE PRECISION (A-H, O-Z) 
 
       beta2=1.-4.*eps*z/(1.-z)
       beta=sqrt(beta2)
@@ -2141,7 +2143,7 @@ c Simplified version of NLO c2g in FFNS Q2>M2
 
 c Simplified version of NLO c2q in FFNS Q2>M2
       function c2qffnsh(z,eps)
-      IMPLICIT DOUBLE PRECISION (A-H, O-Z) ! G.W. 15/02/2007
+      IMPLICIT DOUBLE PRECISION (A-H, O-Z) 
 
       beta2=1.-4.*eps*z/(1.-z)
       beta=sqrt(beta2)
@@ -2435,7 +2437,6 @@ c Approx version of NNLO clq in FFNS Q2<M2
       end
 
 
-
 * =======================================================================
 *
 * ..This is the regular non-singlet piece for the electromagnetic F2,
@@ -2499,7 +2500,6 @@ c Approx version of NNLO clq in FFNS Q2<M2
        RETURN
        END
 *
-
 
 
 c Simplified version of NNLO l2q in FFNS Q2<M2
@@ -2634,6 +2634,7 @@ c Simplified version of LO clg convoluted with a2gg
       return
       end 
      
+
 ! =====================================================================
 !
 ! ..File: xa2hgp.f (provided by A.Vogt for G.Salam's HOPPET)
@@ -2689,3 +2690,9 @@ c Simplified version of LO clg convoluted with a2gg
 
       RETURN
       END
+
+
+
+
+
+
