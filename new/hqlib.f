@@ -24,7 +24,7 @@ Cf2py intent(out) flb
       IMPLICIT DOUBLE PRECISION (A-H, O-Z)
       DIMENSION FTEMP(5)
       double precision x,q,f2,f2c,f2b,fl,flc,flb
-      integer ipn
+      integer ipn,iord
       INTEGER alphaSorder,alphaSnfmax
       DOUBLE PRECISION distance,tolerance,
      &     mCharm,mBottom,alphaSQ0,alphaSMZ
@@ -36,8 +36,7 @@ Cf2py intent(out) flb
       COMMON/GAUS96/XI(96),WI(96),XX(97),NTERMS 
       DATA PI,PI2/3.14159,9.8696/
 
-
-
+      !print*,'iord=',iord
       IF (IORD.EQ.2) THEN
          CALL MSTWNCnnlo(x,q,ipn,f2,f2c,f2b,fl,flc,flb)
          RETURN
@@ -80,7 +79,7 @@ Cf2py intent(out) flb
 
  
       CALL FETCH(X,S,IPN,FTEMP)
-      print*,ftemp
+      !print*,ftemp
       theory=ftemp(1)
       fx=ftemp(1)
       fg=ftemp(2)

@@ -1,4 +1,5 @@
-lhapdf=-L/home/nsato/apps/lhapdf/lib  -lLHAPDF
+#lhapdf=-L/home/nsato/apps/lhapdf/lib  -lLHAPDF
+lhapdf=-L/work/JAM/apps/lhapdf/lib  -lLHAPDF
 
 compile:
 	gfortran -o pro main.f90 alphaS.f hqlib.f  $(lhapdf) 

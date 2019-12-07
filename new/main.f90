@@ -18,7 +18,7 @@ CHARACTER prefix*50,prefix1*50,cl*4,namejam*60
 integer n
 double precision alphas
 
-iordmstw = 1 !--0=LO, 1=NLO, 2=NNLO
+iordmstw = 2 !--0=LO, 1=NLO, 2=NNLO
 ipn=1        !--1 = proton, 2 = neutron, 3 = nucleus DSSZ, 4 = nucleus EPS09 
 isetjam = 0  !--replica 0
 

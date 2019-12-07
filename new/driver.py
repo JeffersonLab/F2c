@@ -5,7 +5,7 @@ import pylab as py
 #import lhapdf
 import hqlib as hq
 
-iord  = 1        #--0=LO, 1=NLO, 2=NNLO
+iord  = 2        #--0=LO, 1=NLO, 2=NNLO
 ipn   = 1        #--1 = proton, 2 = neutron, 3 = nucleus DSSZ, 4 = nucleus EPS09 
 fr2   = 1.0      #--ratio of mu_f^2 to mu_r^
 mur   = 1.       #--input mu_r in G
