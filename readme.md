@@ -2,8 +2,8 @@
 
 ## installation
 
-- Go to mstw folder and proceed to install the python 
-  interface according to the readme 
+Go to mstw folder and proceed to install the python 
+interface according to the readme 
 
 ## Getting sarted
 
