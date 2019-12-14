@@ -12,7 +12,7 @@ is given in the ``driver.py``. Just follow the
 the code and you should be able to estimate 
 an impact on the nuclear glue as the following figure:
 
-[glue](gallaery/glue.png)
+[glue](gallery/glue.png)
 
 
 # Authors
