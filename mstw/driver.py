@@ -29,6 +29,7 @@ hq.wate96()
 hq.initalphas(iord, fr2, mur, asmur, mc, mb, mt)
 
 fname = 'JAM19PDF_proton_nlo'
+fname = 'EPPS16nlo_CT14nlo_He4'
 #fname = 'CT10nlo'
 iset  = 0 
 hq.setup(fname.ljust(100),iset)

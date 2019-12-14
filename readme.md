@@ -6,7 +6,7 @@
   interface according to the readme 
 
 
-## Quick setup
+## Getting sarted
 
 - Run the install script: 
   ```

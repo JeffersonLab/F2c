@@ -14,7 +14,7 @@ COMMON/setjam/isetjam
 INTEGER alphaSorder,alphaSnfmax
 DOUBLE PRECISION distance,tolerance, mCharm,mBottom,alphaSQ0,alphaSMZ
 COMMON/mstwCommon/distance,tolerance,mc,mb,ASMUR,alphaSMZ,alphaSorder,alphaSnfmax
-CHARACTER prefix*50,prefix1*50,cl*4,namejam*60
+CHARACTER prefix*50,prefix1*50,cl*4,namejam*60,fname*60
 integer n
 double precision alphas
 
@@ -32,22 +32,22 @@ MT = 175d10               !--top quark mas
 CALL WATE96
 CALL INITALPHAS(IORDmstw, FR2, mur, ASMUR, MC, MB, MT)
 
-namejam = 'JAM19PDF_proton_nlo'
-call initpdfsetbyname(namejam)
-!call numberpdf(n) !number of replicas
-call initpdf(isetjam)
-
-x  = 0.5d0
-q2 = 10d0
-q  = dsqrt(q2)
-call MSTWNC(x,q,ipn,f2,f2c,f2b,fl,flc,flb)
-write(*,'(F20.10)') ALPHAS(q)
-write(*,'(F20.10)') f2
-write(*,'(F20.10)') f2c
-write(*,'(F20.10)') f2b
-write(*,'(F20.10)') fl
-write(*,'(F20.10)') flc
-write(*,'(F20.10)') flb
+fname = 'JAM19PDF_proton_nlo'
+call initpdfsetbyname(fname)
+call numberpdf(n) !number of replicas
+!call initpdf(isetjam)
+!
+!x  = 0.5d0
+!q2 = 10d0
+!q  = dsqrt(q2)
+!call MSTWNC(x,q,ipn,f2,f2c,f2b,fl,flc,flb)
+!write(*,'(F20.10)') ALPHAS(q)
+!write(*,'(F20.10)') f2
+!write(*,'(F20.10)') f2c
+!write(*,'(F20.10)') f2b
+!write(*,'(F20.10)') fl
+!write(*,'(F20.10)') flc
+!write(*,'(F20.10)') flb
 end program
 
 

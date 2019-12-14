@@ -48,3 +48,7 @@ def load_config(fname):
   for l in L: exec l
   return conf   
 
+def lprint(msg):
+  sys.stdout.write('\r')
+  sys.stdout.write(msg)
+  sys.stdout.flush()
