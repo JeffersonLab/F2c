@@ -5,34 +5,18 @@
 - Go to mstw folder and proceed to install the python 
   interface according to the readme 
 
-
 ## Getting sarted
 
-- Run the install script: 
-  ```
-  ./install
-  ```
-  This will compile the fortran codes 
-  and it will generate the wrapper.
+The full workflow for the Bayesian reweighting 
+is given in the ``driver.py``. Just follow the 
+the code and you should be able to estimate 
+an impact on the nuclear glue as the following figure:
 
-- Run the driver script:
-  ```
-  ./driver.py
-  ```
+[glue](gallaery/glue.png)
 
-- If everything goes well a folder called "gallery" 
-  will be created with a pdf plot
-
-## Trouble shooting
-
-- Failure in the install script. Create an issue 
-  in github
-
-- Failure in the driver.py. Try commenting out 
-  lines 6-8 using the # simbol. If it does not work 
-  create an issue.
 
 # Authors
+
 - C. Andres
 - N. Sato
 
