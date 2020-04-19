@@ -213,10 +213,10 @@ def plot1(Q2=2.0):
                      ,label=r'$\rm EPPS16+EIC$')
 
     #--plot eic kinematics
-    t=pd.read_excel('expdata/eic.xlsx')
-    xmin=np.amin(t.X)
-    xmax=np.amax(t.X)
-    ax.plot([xmin,xmax],[0.6,0.6],'g-',lw=5)
+    #t=pd.read_excel('expdata/eic.xlsx')
+    #xmin=np.amin(t.X)
+    #xmax=np.amax(t.X)
+    #ax.plot([xmin,xmax],[0.6,0.6],'g-',lw=5)
     #ax.text(0.3,0.15,r'$\rm EIC~kinematics$',size=10,transform=ax.transAxes)
 
     #--grids prop
@@ -289,10 +289,10 @@ def plot2(Q2=2.0):
                      ,label=r'$\rm EPPS16+EIC$')
 
     ##--plot eic kinematics
-    t=pd.read_excel('expdata/eic.xlsx')
-    xmin=np.amin(t.X)
-    xmax=np.amax(t.X)
-    ax.plot([xmin,xmax],[0.25,0.25],'g-',lw=5)
+    #t=pd.read_excel('expdata/eic.xlsx')
+    #xmin=np.amin(t.X)
+    #xmax=np.amax(t.X)
+    #ax.plot([xmin,xmax],[0.25,0.25],'g-',lw=5)
     #ax.text(0.3,0.15,r'$\rm EIC~kinematics$',size=10,transform=ax.transAxes)
 
     #--grids prop
@@ -334,7 +334,7 @@ if __name__=="__main__":
     #gen_mc_F2c()
     #gen_mc_glue(Q2)
     #gen_weights()
-    plot1(Q2)
+    #plot1(Q2)
     plot2(Q2)
 
 
