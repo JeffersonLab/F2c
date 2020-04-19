@@ -15,7 +15,7 @@ import pylab as py
 from tools import load, save,checkdir
 from mstw import hqlib as hq
 
-fname = 'EPPS16nlo_CT14nlo_He4'
+fname = 'EPPS16nlo_CT14nlo_Fe56'
 
 def gen_eic_table():
     t1=pd.read_excel('expdata/30000.xlsx')
@@ -91,10 +91,10 @@ def gen_hess_error():
     t['hess']=err2**0.5
     save(t,'data/hess.po')
 
-def gen_hess_glue(Q2=10.0):
+def gen_hess_glue(Q2=2.0):
 
     X=10**np.linspace(-4,-1,100)
-    X=np.append(X,np.linspace(0.1,0.9,100))
+    X=np.append(X,np.linspace(0.1,0.99,100))
 
     data={'X':X,'Q2':Q2}
     pdfs=lhapdf.mkPDFs(fname)
@@ -136,7 +136,7 @@ def gen_mc_F2c():
     mcF2c=np.array(mcF2c)
     save(mcF2c,'data/mcF2c.po')
 
-def gen_mc_glue(Q2=10.0):
+def gen_mc_glue(Q2=2.0):
     rnd=load('data/rand.po')
     t=load('data/hess_glue_%.2f.po'%Q2)
 
@@ -177,7 +177,7 @@ def gen_weights():
 
     save(weights,'data/weights.po')
   
-def plot(Q2=10.0):  
+def plot1(Q2=2.0):  
     hess = load('data/hess_glue_%.2f.po'%Q2)
     mc   = load('data/mcglue_%.2f.po'%Q2)
 
@@ -216,15 +216,17 @@ def plot(Q2=10.0):
     t=pd.read_excel('expdata/eic.xlsx')
     xmin=np.amin(t.X)
     xmax=np.amax(t.X)
-    ax.plot([xmin,xmax],[0.85,0.85],'g-',lw=5)
-    ax.text(0.3,0.15,r'$\rm EIC~kinematics$',size=10,transform=ax.transAxes)
+    ax.plot([xmin,xmax],[0.6,0.6],'g-',lw=5)
+    #ax.text(0.3,0.15,r'$\rm EIC~kinematics$',size=10,transform=ax.transAxes)
 
     #--grids prop
     ax.axhline(1,color='k',ls=':')
-    ax.set_ylim(0.8,1.2)
-    ax.set_xlim(1e-2,0.5)
+    ax.set_ylim(0.5,1.5)
+    ax.set_xlim(1e-2,0.9)
     ax.semilogx()
-    ax.set_yticks([0.8,0.9,1,1.1,1.2])
+    #ax.set_yticks([0.8,0.9,1,1.1,1.2])
+    ax.set_xticks([0.01,0.1])
+    ax.set_xticklabels([r'$0.01$',r'$0.1$'])
 
 
     ax.legend(loc=1,framealpha=1)
@@ -235,6 +237,8 @@ def plot(Q2=10.0):
     ax.set_xlabel(r'$x$',size=20)
     ax.xaxis.set_label_coords(0.95,-0.03)
 
+    ax.text(0.3,0.9,r'$\mu^2=2{~\rm GeV^2}$',size=15,transform=ax.transAxes)
+    ax.text(0.3,0.8,r'$A=56$',size=15,transform=ax.transAxes)
 
 
     py.tight_layout()
@@ -243,16 +247,96 @@ def plot(Q2=10.0):
     py.savefig('gallery/glue.png')
     py.close()
 
+def plot2(Q2=2.0):  
+
+    hess = load('data/hess_glue_%.2f.po'%Q2)
+    mc   = load('data/mcglue_%.2f.po'%Q2)
+
+
+    ncols,nrows=1,1
+    py.figure(figsize=(ncols*5,nrows*4))
+    ax=py.subplot(nrows,ncols,1)
+
+    X=hess['X']
+
+    ct14  = lhapdf.mkPDFs('CT14nlo')
+    denom = np.array([ct14[0].xfxQ2(21,x,Q2) for x in X])
+
+
+    #--plot current errorbands (hess version)
+    ax.fill_between(X,(hess[0]-hess['err'])/denom
+                     ,(hess[0]+hess['err'])/denom
+                     ,color='Y',alpha=0.5
+                     ,label=r'$\rm EPPS16$')
+
+    #--plot current errorbands (mc version)
+    #g  = np.mean(mc,axis=0)
+    #dg = np.std(mc,axis=0)
+    #ax.fill_between(X,(g-dg)/denom
+    #                 ,(g+dg)/denom
+    #                 ,facecolor='none',hatch='//',edgecolor='k')
+        
+
+    #--plot mc reweighted errorbands
+    weights=load('data/weights.po')
+    g=np.sum([weights[i]*mc[i] for i in range(weights.size)],axis=0)
+    dg=np.sum([weights[i]*(mc[i]-g)**2 for i in range(weights.size)],axis=0)**0.5
+
+
+    ax.fill_between(X,(g-dg)/denom
+                     ,(g+dg)/denom
+                     ,facecolor='r',alpha=0.8
+                     ,label=r'$\rm EPPS16+EIC$')
+
+    ##--plot eic kinematics
+    t=pd.read_excel('expdata/eic.xlsx')
+    xmin=np.amin(t.X)
+    xmax=np.amax(t.X)
+    ax.plot([xmin,xmax],[0.25,0.25],'g-',lw=5)
+    #ax.text(0.3,0.15,r'$\rm EIC~kinematics$',size=10,transform=ax.transAxes)
+
+    #--grids prop
+    ax.axhline(1,color='k',ls=':')
+    ax.set_ylim(0,2)
+    ax.set_xlim(1e-2,0.9)
+    ax.semilogx()
+    ax.set_yticks([0,0.5,1,1.5,2])
+    ax.set_xticks([0.01,0.1])
+    ax.set_xticklabels([r'$0.01$',r'$0.1$'])
+
+    ax.text(0.05,0.9,r'$\mu^2=2{~\rm GeV^2}$',size=15,transform=ax.transAxes)
+    ax.text(0.05,0.8,r'$A=56$',size=15,transform=ax.transAxes)
+
+    ax.legend(loc=1,framealpha=1)
+
+    #--axis labels
+    ax.set_ylabel(r'$R_g$',size=20)
+
+    ax.set_xlabel(r'$x$',size=20)
+    ax.xaxis.set_label_coords(0.95,-0.03)
+
+
+
+    py.tight_layout()
+    checkdir('gallery')
+    #py.savefig('gallery/Rg.pdf')
+    py.savefig('gallery/Rg.png')
+    py.close()
+
 if __name__=="__main__":
+
+    Q2=2.0
 
     #gen_predictions()
     #gen_hess_error()
-    #gen_hess_glue(Q2=10.0)
+    #gen_hess_glue(Q2)
     #gen_rand(nrep=1000)
     #gen_mc_F2c()
-    #gen_mc_glue(Q2=10.0)
+    #gen_mc_glue(Q2)
     #gen_weights()
-    plot()
+    plot1(Q2)
+    plot2(Q2)
+
 
 
 

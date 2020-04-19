@@ -14,6 +14,8 @@ an impact on the nuclear glue as the following figure:
 
 ![glue](./gallery/glue.png)
 
+![glue](./gallery/Rg.png)
+
 
 # Authors
 
