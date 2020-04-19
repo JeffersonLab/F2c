@@ -330,7 +330,7 @@ if __name__=="__main__":
     #gen_predictions()
     #gen_hess_error()
     #gen_hess_glue(Q2)
-    #gen_rand(nrep=1000)
+    #gen_rand(nrep=10000)
     #gen_mc_F2c()
     #gen_mc_glue(Q2)
     #gen_weights()
